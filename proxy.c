@@ -71,6 +71,7 @@ void doit(int fd)
     int server_fd;
     char host_header[MAXLINE],append_header[MAXLINE];
     char temp_buf_point[MAXLINE];
+    memset(path,'\0',MAXLINE);
     /* Read request line and headers */
     Rio_readinitb(&rio, fd);
     if (!Rio_readlineb(&rio, buf, MAXLINE))  //line:netp:doit:readrequest
@@ -95,11 +96,11 @@ void doit(int fd)
     printf("port is %s\n",port);
     printf("request_line is %s\n",request_line);
     server_fd = Open_clientfd(host,port);
-    
-    Rio_readinitb(&server_rio,server_fd);
     Rio_writen(server_fd,request_line,strlen(request_line));
+    Rio_readinitb(&server_rio,server_fd);
+    
     int read_count;
-    while (read_count=Rio_readnb(&server_rio,temp_buf_point,MAXLINE)>0){
+    while ((read_count=Rio_readnb(&server_rio,temp_buf_point,MAXLINE))>0){
         Rio_writen(fd,temp_buf_point,read_count);
     }
     close(server_fd);
@@ -107,24 +108,25 @@ void doit(int fd)
 /* $end doit */
 int parse_uri(char *uri,char* host,char*path,char* port){
     char *ifport;
-    strcpy(port,"80") ;
+    strcpy(port,"80\0") ;
     printf("uri is %s\n",uri);
     char * host_start = strstr(uri,"http://")+7;
     if(!host_start) return 0;
     char * host_end = strstr(host_start,"/");
     if(!host_end){
         strcpy(host,host_start);
-        path ="/";
+        strcpy(path,"/\0");
     }
     else{
         strncpy(host,host_start,host_end-host_start);
         ifport=strstr(host,":");
         if(ifport){
-            *ifport='\0';
+            strcpy(ifport,"\0");
             strcpy(port,ifport+1);
         }
         printf("host is %s\n",host);
         printf("port is %s\n",port);
+        char * url_end =strstr(host_start," ");
         strncpy(path,host_end,strlen(host_end));
         printf("path is %s\n",path);
     }

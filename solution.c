@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "csapp.h"
-#include "csapp.c"
 /* Recommended max cache and object sizes */
 /*
  * 简单的proxy 支持多线程和有一定缓存， 运用读者-写者模型保证共享，用一个数组去缓存合理的数据*/
