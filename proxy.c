@@ -339,7 +339,7 @@ block * find_replace_block(){
 
 }
 
-/*读者进入，如果是第一个读者，加写锁保证不会有写者写入*/
+
 void before_read(){
     P(&add_mutex);
     readcnt++;
@@ -347,7 +347,7 @@ void before_read(){
         P(&w_mutex);
     V(&add_mutex);
 }
-/*读者离开，如果是最后一个读者，解开写锁使得可以有写者写入*/
+
 void after_read(){
     P(&add_mutex);
     readcnt--;
